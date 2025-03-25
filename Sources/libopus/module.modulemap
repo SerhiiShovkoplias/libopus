@@ -1,0 +1,5 @@
+module libopus {
+    umbrella "include"
+    export *
+    link libopus
+}

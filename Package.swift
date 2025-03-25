@@ -11,16 +11,16 @@ let package = Package(
         .library(
             name: "libopus",
             targets: ["libopus"]
-        ),
+        )
     ],
     targets: [
         .binaryTarget(
-            name: "libopus-lib",
-            path: "libopus.xcframework"
+            name: "libopus-binary",
+            path: "./libopus.xcframework"
         ),
         .target(
             name: "libopus",
-            dependencies: ["libopus-lib"],
+            dependencies: ["libopus-binary"],
             path: "Sources/libopus",
             publicHeadersPath: "include"
         )
