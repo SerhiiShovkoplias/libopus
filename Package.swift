@@ -16,7 +16,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "libopus-lib",
-            path: "Sources/libopus/libopus.xcframework"
+            path: "libopus.xcframework"
         ),
         .target(
             name: "libopus",

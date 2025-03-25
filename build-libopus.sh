@@ -153,7 +153,7 @@ CMD=(xcodebuild -create-xcframework)
 for FRAMEWORK in "${FRAMEWORKS[@]}"; do
     CMD+=(-framework "$FRAMEWORK")
 done
-CMD+=(-output "$SOURCE_DESTINATION_DIR/libopus.xcframework")
+CMD+=(-output "$BUILD_DIR/libopus.xcframework")
 "${CMD[@]}"
 
 echo "🧹 Cleaning up intermediate build directories"
