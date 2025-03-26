@@ -186,36 +186,46 @@ find "$XCFRAMEWORK_PATH" -type d -name "${EXECUTABLE_NAME}.framework" | while re
     plist_path="$fw_path/Info.plist"
     echo "   ↪︎ Writing Info.plist → $plist_path"
 
-    cat > "$plist_path" <<EOF
+cat > "$plist_path" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleIdentifier</key>
-    <string>${BUNDLE_ID}</string>
-    <key>CFBundleName</key>
-    <string>${EXECUTABLE_NAME}</string>
-    <key>CFBundleExecutable</key>
-    <string>${EXECUTABLE_NAME}</string>
-    <key>CFBundleVersion</key>
-    <string>${BUILD}</string>
-    <key>CFBundleShortVersionString</key>
-    <string>${VERSION}</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>${EXECUTABLE_NAME}</string>
+    <key>CFBundleIdentifier</key>
+    <string>${BUNDLE_ID}.${platform}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>${EXECUTABLE_NAME}</string>
     <key>CFBundlePackageType</key>
     <string>FMWK</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${VERSION}</string>
+    <key>CFBundleVersion</key>
+    <string>${BUILD}</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
     <key>MinimumOSVersion</key>
     <string>${minOS}</string>
     <key>CFBundleSupportedPlatforms</key>
     <array>
         <string>${platform}</string>
     </array>
+    <key>DTPlatformName</key>
+    <string>${platform}</string>
+    <key>DTPlatformVersion</key>
+    <string>${minOS}</string>
+    <key>DTSDKName</key>
+    <string>${platform}${minOS}</string>
 </dict>
 </plist>
 EOF
+
+
 done
 
 echo "📦 Info.plist injection complete ✅"
@@ -223,7 +233,7 @@ echo "📦 Info.plist injection complete ✅"
 echo "🧹 Cleaning up intermediate build directories"
 for ARCH in "${ARCHS[@]}"; do
     rm -rf "$BUILD_DIR/$ARCH"
-    rm -rf "$SOURCE_DESTINATION_DIR/$ARCH"
 done
+    rm -rf "$BUILD_DIR/Sources"
 
 echo "✅ Done! XCFramework created at $SOURCE_DESTINATION_DIR/libopus.xcframework"
