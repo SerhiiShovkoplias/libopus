@@ -156,6 +156,70 @@ done
 CMD+=(-output "$BUILD_DIR/libopus.xcframework")
 "${CMD[@]}"
 
+# ✅ Inject Info.plist into each framework inside the .xcframework
+echo "🧾 Injecting Info.plist into each libopus.framework slice..."
+
+XCFRAMEWORK_PATH="$BUILD_DIR/libopus.xcframework"
+EXECUTABLE_NAME="libopus"
+BUNDLE_ID="org.opus-codec.libopus"
+VERSION="1.3.1"
+BUILD="1"
+
+get_platform() {
+  case "$1" in
+    *ios-arm64*) echo "iPhoneOS" ;;
+    *ios-x86_64*) echo "iPhoneSimulator" ;;
+    *macos*) echo "MacOSX" ;;
+    *) echo "Unknown" ;;
+  esac
+}
+
+find "$XCFRAMEWORK_PATH" -type d -name "${EXECUTABLE_NAME}.framework" | while read -r fw_path; do
+    platform=$(get_platform "$fw_path")
+
+    if [[ "$platform" == "MacOSX" ]]; then
+        minOS="$MINMACOSVERSION"
+    else
+        minOS="$MINIOSVERSION"
+    fi
+
+    plist_path="$fw_path/Info.plist"
+    echo "   ↪︎ Writing Info.plist → $plist_path"
+
+    cat > "$plist_path" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>${BUNDLE_ID}</string>
+    <key>CFBundleName</key>
+    <string>${EXECUTABLE_NAME}</string>
+    <key>CFBundleExecutable</key>
+    <string>${EXECUTABLE_NAME}</string>
+    <key>CFBundleVersion</key>
+    <string>${BUILD}</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${VERSION}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundlePackageType</key>
+    <string>FMWK</string>
+    <key>MinimumOSVersion</key>
+    <string>${minOS}</string>
+    <key>CFBundleSupportedPlatforms</key>
+    <array>
+        <string>${platform}</string>
+    </array>
+</dict>
+</plist>
+EOF
+done
+
+echo "📦 Info.plist injection complete ✅"
+
 echo "🧹 Cleaning up intermediate build directories"
 for ARCH in "${ARCHS[@]}"; do
     rm -rf "$BUILD_DIR/$ARCH"
