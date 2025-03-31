@@ -1,0 +1,4 @@
+module libopus {
+    umbrella "/Users/dev/Documents/OpusAudioToolkit/libopus/Sources/libopus/include"
+    export *
+}
